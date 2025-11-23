@@ -2,7 +2,6 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { hashPassword, comparePassword, generateToken } from '../utils/auth';
-import { btcToSbtc } from '../utils/constants';
 
 const router = express.Router();
 const prisma = new PrismaClient();

@@ -4,7 +4,6 @@ import api from '../utils/api';
 import { Transaction } from '../types';
 import { Card, CardContent } from '../components/ui/Card';
 import { format } from 'date-fns';
-import { Download } from 'lucide-react';
 import colors from '../utils/colors';
 
 export default function Transactions() {
@@ -27,9 +26,9 @@ export default function Transactions() {
     }
   };
 
-  // Calculate USD value (mock conversion: 1 BTC = 40,000 USD)
+  // Calculate USD value: 1 USD = 0.000012 BTC, so 1 BTC = 83,333.33 USD
   const btcToUsd = (btc: number) => {
-    return (btc * 40000).toFixed(2);
+    return (btc / 0.000012).toFixed(2);
   };
 
   // Format BTC amount
@@ -68,12 +67,6 @@ export default function Transactions() {
     }
   };
 
-  // Calculate gain percentage (mock calculation)
-  const calculateGain = (transaction: Transaction) => {
-    // Mock: random gain between -5% and 10%
-    return Math.random() > 0.5 ? Math.random() * 10 : -Math.random() * 5;
-  };
-
   if (loading) {
     return (
       <div className="p-8">
@@ -107,21 +100,15 @@ export default function Transactions() {
                   <th className="text-right p-4 text-sm font-medium" style={{ color: colors.textLight }}>
                     Value in BTC
                   </th>
-                  <th className="text-right p-4 text-sm font-medium" style={{ color: colors.textLight }}>
-                    Gains
-                  </th>
                   <th className="text-center p-4 text-sm font-medium" style={{ color: colors.textLight }}>
                     Status
-                  </th>
-                  <th className="text-center p-4 text-sm font-medium" style={{ color: colors.textLight }}>
-                    Receipt
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center p-8" style={{ color: colors.textLight }}>
+                    <td colSpan={5} className="text-center p-8" style={{ color: colors.textLight }}>
                       No transactions yet
                     </td>
                   </tr>
@@ -129,8 +116,6 @@ export default function Transactions() {
                   transactions.map((transaction) => {
                     const usdValue = btcToUsd(transaction.amountBtc);
                     const btcValue = formatBTC(transaction.amountBtc);
-                    const gain = calculateGain(transaction);
-                    const isPositive = gain > 0;
 
                     return (
                       <tr
@@ -150,15 +135,6 @@ export default function Transactions() {
                         <td className="p-4 text-sm text-right" style={{ color: colors.textDark }}>
                           {btcValue} BTC
                         </td>
-                        <td className="p-4 text-sm text-right">
-                          {gain !== 0 ? (
-                            <span style={{ color: isPositive ? colors.success : colors.error }}>
-                              {isPositive ? '↑' : '↓'} {Math.abs(gain).toFixed(2)}%
-                            </span>
-                          ) : (
-                            <span style={{ color: colors.textLight }}>—</span>
-                          )}
-                        </td>
                         <td className="p-4 text-center">
                           <span
                             className="inline-block px-3 py-1 rounded-full text-xs font-medium"
@@ -171,15 +147,6 @@ export default function Transactions() {
                              transaction.status === 'FAILED' ? 'Error' : 
                              transaction.status === 'PENDING' ? 'Created' : transaction.status}
                           </span>
-                        </td>
-                        <td className="p-4 text-center">
-                          <button
-                            className="p-2 hover:bg-opacity-50 rounded transition-colors"
-                            style={{ color: colors.textLight }}
-                            title="Download receipt"
-                          >
-                            <Download size={18} />
-                          </button>
                         </td>
                       </tr>
                     );

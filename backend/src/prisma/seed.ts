@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../utils/auth';
-import { btcToSbtc } from '../utils/constants';
+import { btcToSbtc, usdToBtc, usdToSbtc } from '../utils/constants';
 
 const prisma = new PrismaClient();
 
@@ -18,8 +18,9 @@ async function main() {
         role: 'VENDOR' as any,
       wallet: {
         create: {
-          btcBalance: 0.5,
-          sbtcBalance: btcToSbtc(0.5),
+          // Set vendor balance to approximately $200 USD
+          btcBalance: usdToBtc(200),
+          sbtcBalance: usdToSbtc(200),
         },
       },
     },

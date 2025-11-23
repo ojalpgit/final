@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { authMiddleware, AuthRequest, requireRole } from '../utils/auth';
-import { btcToSbtc, formatBtc, formatSbtc } from '../utils/constants';
+import { btcToSbtc, formatBtc, formatSbtc, usdToBtc, usdToSbtc } from '../utils/constants';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -468,9 +468,9 @@ router.post('/charge-card', async (req: AuthRequest, res) => {
       return res.status(404).json({ error: 'Wallet not found' });
     }
 
-    // Add funds (convert USD amount to BTC - dummy conversion)
-    const btcAmount = amount * 0.00002;
-    const sbtcAmount = btcToSbtc(btcAmount);
+    // Add funds (convert USD amount to BTC: 1 USD = 0.000012 BTC)
+    const btcAmount = usdToBtc(amount);
+    const sbtcAmount = usdToSbtc(amount);
 
     // Update wallet
     const updatedWallet = await prisma.wallet.update({
